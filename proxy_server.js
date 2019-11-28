@@ -30,7 +30,6 @@ function parseProxyLine(line) {
 }
 
 function requestListener(getProxyInfo, request, response) {
-  logger.info(`request: ${request.url}`);
 
   const proxy = getProxyInfo();
   const ph = url.parse(request.url);
@@ -52,12 +51,10 @@ function requestListener(getProxyInfo, request, response) {
   const proxyRequest = http.request(options);
 
   request.on('error', (err) => {
-    logger.error(`${err.message}`);
     proxyRequest.destroy(err);
   });
 
   proxyRequest.on('error', (error) => {
-    logger.error(`${error.message} on proxy ${proxy.ipaddress}:${proxy.port}`);
     response.writeHead(500);
     response.end('Connection error\n');
   });
@@ -71,7 +68,6 @@ function requestListener(getProxyInfo, request, response) {
 }
 
 function connectListener(getProxyInfo, request, socketRequest, head) {
-  logger.info(`connect: ${request.url}`);
 
   const proxy = getProxyInfo();
 
@@ -87,7 +83,6 @@ function connectListener(getProxyInfo, request, socketRequest, head) {
   let socket;
 
   socketRequest.on('error', (err) => {
-    logger.error(`${err.message}`);
     if (socket) {
       socket.destroy(err);
     }
@@ -98,13 +93,11 @@ function connectListener(getProxyInfo, request, socketRequest, head) {
 
     if (error) {
       // error in SocksSocket creation
-      logger.error(`${error.message} connection creating on ${proxy.ipaddress}:${proxy.port}`);
       socketRequest.write(`HTTP/${request.httpVersion} 500 Connection error\r\n\r\n`);
       return;
     }
 
     socket.on('error', (err) => {
-      logger.error(`${err.message}`);
       socketRequest.destroy(err);
     });
 
@@ -156,20 +149,18 @@ ProxyServer.prototype.loadProxy = function loadProxy(proxyLine) {
   try {
     this.proxyList.push(parseProxyLine(proxyLine));
   } catch (ex) {
-    logger.error(ex.message);
   }
 };
 
 ProxyServer.prototype.loadProxyFile = function loadProxyFile(fileName) {
   const self = this;
 
-  logger.info(`Loading proxy list from file: ${fileName}`);
 
   fs.readFile(fileName, (err, data) => {
     if (err) {
-      logger.error(
-        `Impossible to read the proxy file : ${fileName} error : ${err.message}`
-      );
+        logger.error(
+            `Impossible to read the proxy file : ${fileName} error : ${err.message}`
+        );
       return;
     }
 
@@ -180,7 +171,6 @@ ProxyServer.prototype.loadProxyFile = function loadProxyFile(fileName) {
         try {
           proxyList.push(parseProxyLine(lines[i]));
         } catch (ex) {
-          logger.error(ex.message);
         }
       }
     }
