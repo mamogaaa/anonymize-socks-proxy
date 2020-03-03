@@ -7,8 +7,7 @@
         "type": "git",
         "url": "https://github.com/oyyd/http-proxy-to-socks"
     },
-    "scripts": {
-    },
+    "scripts": {},
     "keywords": [
         "socks",
         "http proxy",

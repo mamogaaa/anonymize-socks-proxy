@@ -78,7 +78,7 @@ async function anonymizeProxy(url, port) {
   });
   url = new URL(url);
   return {
-    server: createServer({
+    server: await createServer({
       socks: `${url.hostname}:${url.port}:${url.username}:${url.password}`,
       port
     }),
